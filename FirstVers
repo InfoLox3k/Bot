@@ -1,0 +1,345 @@
+from random import randint
+import telebot
+from telebot import types
+import time
+import pandas as pd
+
+in_account = False
+
+keys = { '`': 'ё', 'q': 'й', 'w': 'ц', 'e': 'у', 'r': 'к', 't': 'е', 'y': 'н', 'u': 'г', 'i': 'ш',
+         'o': 'щ', 'p': 'з', '[': 'з', ']': 'ъ', 'a': 'ф', 's': 'ы', 'd': 'в', 'f': 'а', 'g': 'п',
+         'h': 'р', 'j': 'о', 'k': 'л', 'l': 'д', ';': 'ж', "'": 'э', 'z': 'я', 'x': 'ч', 'c': 'с',
+         'v': 'м', 'b': 'и', 'n': 'т', 'm': 'ь', ',': 'б', '.': 'ю', '~': 'Ё', 'Q': 'Й', 'W': 'Ц',
+         'E': 'У', 'R': 'К', 'T': 'Е', 'Y': 'Н', 'U': 'Г', 'I': 'Ш', 'O': 'Щ', 'P': 'З', '{': 'Х',
+         '}': 'Ъ', 'A': 'Ф', 'S': 'Ы', 'D': 'В', 'F': 'А', 'G': 'П', 'H': 'Р', 'J': 'О', 'K': 'Л',
+         'L': 'Д', ':': 'Ж', '"': 'Э', 'Z': 'Я', 'X': 'Ч', 'C': 'С', 'V': 'М', 'B': 'И', 'N': 'Т',
+         'M': 'Ь', '<': 'Б','>': 'Ю'}
+
+def RusText(message):
+    message2 = ''
+    for item in message:
+        if item in keys:
+            true = keys.get(item)
+            message2 += true
+        else:
+            message2 += item
+    return message2
+
+# Список городов на букву А
+cities_A = ["Абаза", "Абакан", "Абдулино", "Абинск", "Агидель", "Агрыз", "Адыгейск", "Азнакаево", "Азов", "Ак-Довурак", "Аксай", "Алагир", "Алапаевск", "Алатырь", "Алдан", "Алейск", "Александров", "Александровск", "Александровск-Сахалинский", "Алексеевка", "Алексин", "Алзамай", "Алупка", "Алушта", "Альметьевск", "Амурск", "Анадырь", "Анапа", "Ангарск", "Андреаполь", "Анжеро-Судженск", "Анива", "Апатиты", "Апрелевка", "Апшеронск", "Арамиль", "Аргун", "Ардатов", "Ардон", "Арзамас", "Аркадак", "Армавир", "Армянск", "Арсеньев", "Арск", "Артём", "Артёмовск", "Артёмовский", "Архангельск", "Асбест", "Асино", "Астрахань", "Аткарск", "Ахтубинск", "Ачинск", "Аша"]
+
+# Список городов на букву Б
+cities_B = ["Бабаево", "Бабушкин", "Багратионовск", "Байкальск", "Баксан", "Балабаново", "Балахна", "Балашиха", "Барабинск", "Барнаул", "Барыш", "Батайск", "Батецкий", "Бежецк", "Белгород", "Белебей", "Беленцов", "Белово", "Белорецк", "Белореченск", "Беловежск", "Бендеры", "Бердск", "Березники", "Березовский", "Бийск", "Благовещенск", "Благодарный", "Бодайбо", "Бологое", "Болшево", "Бор", "Борзя", "Борисоглебск", "Борисов", "Братск", "Брянск", "Бугульма", "Бузулук", "Буйнакск", "Буй", "Бурейск", "Бурятия", "Бутурлиновка", "Быково"]
+
+# Список городов на букву В
+cities_V = ["Валдай", "Варгаши", "Варна", "Великие Луки", "Великий Новгород", "Венев", "Верхняя Пышма", "Верхний Уфалей", "Видное", "Владивосток", "Владикавказ", "Владимир", "Волгоград", "Волгодонск", "Волоколамск", "Волоколамск", "Волосово", "Волхов", "Воркута", "Воронеж", "Воскресенск", "Восточный", "Восточный", "Воскресенск", "Вязьма", "Вязники"]
+
+# Список городов на букву Г
+cities_G = ["Гатчина", "Геленджик", "Георгиевск", "Глазов", "Горно-Алтайск", "Горняк", "Гороховец", "Грайворон", "Грозный", "Губкин", "Гудермес", "Гулькевичи", "Гусь-Хрустальный"]
+
+# Список городов на букву Д
+cities_D = ["Дагестан", "Далматово", "Данилов", "Дербент", "Дзержинск", "Димитровград", "Дмитров", "Долгопрудный", "Долгопрудный", "Дубна", "Дубровка", "Духовщина", "Дять", "Дятьково"]
+
+# Список городов на букву Е
+cities_E = ["Егорьевск", "Ейск", "Екатеринбург", "Елабуга", "Елец", "Ессентуки", "Ессентуки", "Ефремов"]
+
+# Список городов на букву Ж
+cities_ZH = ["Железногорск", "Железнодорожный", "Жигулевск", "Жуков", "Жуковский"]
+
+# Список городов на букву З
+cities_Z = ["Заволжье", "Задонск", "Заречный", "Зеленогорск", "Зеленодольск", "Златоуст", "Знаменск", "Зубцов"]
+
+# Список городов на букву И
+cities_I = ["Иваново", "Ивантеевка", "Ижевск", "Иркутск", "Искитим", "Истра", "Ишим", "Ишимбай"]
+
+# Список городов на букву Й
+cities_Y = ["Йошкар-Ола"]
+
+# Список городов на букву К
+cities_K = ["Калуга", "Каменск-Уральский", "Камышин", "Канаш", "Каспийск", "Кемерово", "Керчь", "Кинешма", "Киров", "Кирово-Чепецк", "Кисловодск", "Клин", "Клинцы", "Ковров", "Когалым", "Кострома", "Костромская", "Котлас", "Котельнич", "Краматорск", "Краснодар", "Красноармейск", "Красноярск", "Красноперекопск", "Краснослободск", "Кропоткин", "Кстово", "Кунгур", "Курган", "Курск", "Кушва", "Кызыл"]
+
+# Список городов на букву Л
+cities_L = ["Лабинск", "Лаишево", "Липецк", "Лиски", "Лобня", "Луга", "Луховицы", "Лыткарино", "Люберцы"]
+
+# Список городов на букву М
+cities_M = ["Магадан", "Магнитогорск", "Майкоп", "Махачкала", "Мелеуз", "Миасс", "Минеральные Воды", "Москва", "Мурманск", "Мытищи", "Мышкин"]
+
+# Список городов на букву Н
+cities_N = ["Набережные Челны", "Нальчик", "Наро-Фоминск", "Невинномысск", "Нижневартовск", "Нижний Новгород", "Нижний Тагил", "Николаевск", "Никольск", "Новороссийск", "Новосибирск", "Новомосковск", "Новоржев", "Новый Уренгой", "Ногинск", "Норильск", "Ноябрьск"]
+
+# Список городов на букву О
+cities_O = ["Обнинск", "Одинцово", "Озеры", "Октябрьский", "Омск", "Оренбург", "Орехово-Зуево", "Орлов", "Острогожск", "Оха"]
+
+# Список городов на букву П
+cities_P = ["Павлово", "Пенза", "Переславль-Залесский", "Пермь", "Петрозаводск", "Петропавловск-Камчатский", "Петушки", "Псков", "Пушкино", "Пятигорск"]
+
+# Список городов на букву Р
+cities_R = ["Раменское", "Ревда", "Ржев", "Родники", "Ростов-на-Дону", "Рубцовск", "Рыбинск", "Рязань"]
+
+# Список городов на букву С
+cities_S = ["Салават", "Сарапул", "Саранск", "Саратов", "Светлогорск", "Северодвинск", "Североморск", " Сергиев Посад", "Серов", "Симферополь", "Синегорье", "Смоленск", "Снежинск", "Сочи", "Ставрополь", "Стерлитамак", "Сургут", "Сызрань", "Сыктывкар", "Сысерть"]
+
+# Список городов на букву Т
+cities_T = ["Таганрог", "Тамбов", "Тверь", "Тольятти", "Томск", "Туапсе", "Тула", "Тюмень"]
+
+# Список городов на букву У
+cities_U = ["Улан-Удэ", "Ульяновск", "Уссурийск", "Усть-Лабинск", "Уфа", "Ухта"]
+
+# Список городов на букву Ф
+cities_F = ["Фатеж", "Фрязино", "Фурманов"]
+
+# Список городов на букву Х
+cities_H = ["Хабаровск", "Ханты-Мансийск", "Химки", "Холм", "Холмск"]
+
+# Список городов на букву Ц
+cities_C = ["Цивильск", "Цимлянск"]
+
+# Список городов на букву Ч
+cities_CH = ["Чайковский", "Челябинск", "Черкесск", "Чехов", "Чистополь", "Чита", "Чудово", "Чухлома"]
+
+# Список городов на букву Ш
+cities_SH = ["Шадринск", "Шахты", "Шелехов", "Шумерля"]
+
+# Список городов на букву Э
+cities_YE = ["Электросталь", "Электроугли", "Элиста"]
+
+# Список городов на букву Ю
+cities_YU = ["Южно-Сахалинск", "Южноуральск", "Юрга"]
+
+# Список городов на букву Я
+cities_YA = ["Якутск", "Ялта", "Ярославль"]
+
+allRussianCities = cities_A + cities_B+ cities_V+ cities_G+ cities_D+ cities_E+ cities_ZH+ cities_Z+ cities_I+ cities_Y+ cities_K+ cities_L+ cities_M+ cities_N+ cities_O+ cities_P+ cities_R+ cities_S+ cities_T+ cities_U+ cities_F+ cities_H+ cities_C+ cities_CH+cities_SH+ cities_YE+ cities_YU+ cities_YA
+
+list_ok = cities_A, cities_B, cities_V, cities_G, cities_D, cities_E, cities_ZH, cities_Z, cities_I, cities_Y, cities_K, cities_L, cities_M, cities_N, cities_O, cities_P, cities_R, cities_S, cities_T, cities_U, cities_F, cities_H, cities_C, cities_CH, cities_SH, cities_SH, cities_YE, cities_YU, cities_YA
+
+df_excel = pd.read_excel('Accounts.xlsx')
+
+UsedCities = []
+
+# бот с разными играми, в первую очередь игра в города и в угадай число
+leaderboard = dict()
+bot = telebot.TeleBot("TOKEN")
+
+quest = randint(1, 100) # Инициализация загадки
+
+@bot.message_handler(commands=['start'])
+def startFunc(message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    btn1 = types.KeyboardButton('Игра в Города России')
+    btn2 = types.KeyboardButton("Угадай число")
+    btn3 = types.KeyboardButton("О создателе")
+    btn4 = types.KeyboardButton('Как пользоваться?')
+    btn5 = types.KeyboardButton("Регистрация")
+    btn6 = types.KeyboardButton("Авторизация")
+
+    markup.add(btn1, btn2, btn3, btn4, btn5, btn6)
+    bot.send_message(message.chat.id, text='Приветик! Я ботик!')
+    bot.send_message(message.chat.id, text='Во что сыграем?', reply_markup=markup)
+
+
+@bot.message_handler(content_types=['text'])
+def answer_bot(message):
+    global quest
+    t = message.text
+    print(t)
+    t = RusText(t)
+
+    if t == 'Игра в Города России':
+        bot.send_message(message.chat.id, text='Напиши название города.')
+
+    elif t == "Угадай число":
+        quest = randint(1, 100)  # Генерируем новое число
+        bot.send_message(message.chat.id, text='Я загадал число от 1 до 100, а ты должен его отгадать.')
+        global started_time
+        started_time = time.time()
+
+    elif t == "О создателе":
+        bot.send_message(message.chat.id, text='Никто')
+
+
+    elif t == "Регистрация":
+        bot.send_message(message.chat.id, text='Введите имя для регистрации:')
+        bot.register_next_step_handler(message, register_user)
+
+    elif t == "Авторизация":
+        bot.send_message(message.chat.id, text='Введите имя для авторизации:')
+        bot.register_next_step_handler(message, authorize_user)
+
+    elif t == "Выйти из аккаунта":
+        in_account = False
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton('Игра в Города России')
+        btn2 = types.KeyboardButton("Угадай число")
+        btn3 = types.KeyboardButton("О создателе")
+        btn4 = types.KeyboardButton('Как пользоваться?')
+        btn5 = types.KeyboardButton("Регистрация")
+        btn6 = types.KeyboardButton("Авторизация")
+
+        markup.add(btn1, btn2, btn3, btn4, btn5, btn6)
+
+    elif t.isdigit():
+        NumGame(message)
+
+    elif t == 'Как пользоваться?':
+        bot.send_message(message.chat.id, text='Зайди в меню и выбери действие')
+
+    else:
+        check = None
+        # Проверка на город
+        check = CityCheck(message, t, check)
+        if check == True:
+            CityGame(message, check, t)
+        elif check == False:
+            bot.send_message(message.chat.id, text='Такого города нет в России')
+        elif t in UsedCities:
+            bot.send_message(message.chat.id, text='Уже названо')
+
+def register_user(message):
+    name = message.text
+    bot.send_message(message.chat.id, text='Введите пароль:')
+    bot.register_next_step_handler(message, lambda msg: save_registration(msg, name))
+    in_account = True
+
+def save_registration(message, name):
+    password = message.text
+    new_row = pd.DataFrame({'Login': [name], 'Password': [password]})
+    global df_excel
+    df_excel = pd.concat([df_excel, new_row], ignore_index=True)
+    df_excel.to_excel('Accounts.xlsx', index=False)
+    bot.send_message(message.chat.id, text='Регистрация успешна!')
+
+def authorize_user(message):
+    name = message.text
+    indices = df_excel.index[df_excel['Login'] == name].tolist()
+
+    if indices:
+        bot.send_message(message.chat.id, text='Введите пароль:')
+        bot.register_next_step_handler(message, lambda msg: check_authorization(msg, indices[0]))
+    else:
+        bot.send_message(message.chat.id, text=f"Пользователь '{name}' не найден.")
+
+def check_authorization(message, index):
+    password = message.text
+    Your_password = df_excel.loc[index, 'Password']
+    if password != Your_password:
+        bot.send_message(message.chat.id, text='Пароль неправильный')
+    else:
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton('Игра в Города России')
+        btn2 = types.KeyboardButton("Угадай число")
+        btn3 = types.KeyboardButton("О создателе")
+        btn4 = types.KeyboardButton('Как пользоваться?')
+        btn5 = types.KeyboardButton("Выйти из аккаунта")
+
+        markup.add(btn1, btn2, btn3, btn4, btn5)
+
+        bot.send_message(message.chat.id, text='Добро пожаловать!', reply_markup=markup)
+        in_acoount = True
+
+#         Develop your skills
+# Deal with different situations
+# Arrange a meeting with friends
+# Calculate money
+# Install a new app
+
+
+
+def NumGame(message):
+    global quest
+    answer = int(message.text) # Преобразуем текст в число
+    if 1 <= answer <= 100:
+        if answer > quest:
+            bot.send_message(message.chat.id, text='Твоё число великовато')
+        elif answer < quest:
+            bot.send_message(message.chat.id, text='Твоё число мелковато')
+        else:
+            bot.send_message(message.chat.id, text="Ты победил!")
+            end_time = time.time()
+            gamers_time = end_time - started_time
+            bot.send_message(message.chat.id, text=f"Ваш результат: {int(gamers_time)}c")
+            if in_account == False:
+                pass
+            elif in_account == True:
+                old_result = df_excel.loc[index, 'Best Time']
+                if gamers_time > best_time:
+                    New_best_result = df_excel.loc[index, 'Best Time']
+                    df_excel.to_excel('Accounts.xlsx', index=False)
+                else:
+                    bot.send_message(message.chat.id, text="Увы, рекорда не достигли.\n"
+                                                           f"Ваш рекорд: {old_result}с")
+
+            quest = randint(1, 100) # Генерируем новое число
+    else:
+        bot.send_message(message.chat.id, text="Ой не лги царю! Давай по новой.")
+
+def CityGame(message, check, t):
+    bot.send_message(message.chat.id, text="Ответ бота не реализован")
+
+    # Получаем последнюю букву
+    answer_bot_letter = t[-1]
+
+    # Проверка на мягкие знаки
+    if answer_bot_letter in ['ь', 'ы', 'ъ']:
+        answer_bot_letter = t[-2]  # Если последняя буква мягкий знак, берем предпоследнюю
+
+    # bot.send_message(message.chat.id, text=f"Последняя буква: {answer_bot_letter}")
+
+    found = False
+    found_list_name = None
+
+    # Проверка, в каком списке находится город
+    for list_info in list_ok:
+        city_list = list_info
+        if t in city_list:
+            found_list_name = list_info
+            # bot.send_message(message.chat.id, text=f"{t} найден в списке {found_list_name}.")
+            print(f"{t} найден в списке {found_list_name}.")
+            UsedCities.append(t)
+            found = True
+            break  # Выходим из цикла, если нашли
+
+    if not found:
+        print(f"{t} не найден ни в одном списке.")
+        return  # Выходим из функции, если город не найден
+
+    CityBotCheck(message, t, 0, UsedCities)
+
+    # # Проверяем, есть ли города на последнюю букву
+    # if citylist and citylist[0] not in UsedCities:
+    #     bot.send_message(message.chat.id, text=f"Я выбираю: {citylist[0]}")
+    #     UsedCities.append(citylist[0])
+    # else:
+    #     bot.send_message(message.chat.id, text="У меня нет города на эту букву.")
+def CityBotCheck(message, t, n, UsedCities):
+    t2 = t[-1]
+    if t[-1] in ['ь', 'ы', 'ъ']:
+        t2 = t[-2]
+    Finish = 0
+    t2 = t2.upper()
+    for list_info in list_ok:
+        if list_info[n][0] == t2:
+            while True:
+                if list_info[n] not in UsedCities:
+                    bot.send_message(message.chat.id, text=f"Я выбираю: {list_info[n]}")
+                    UsedCities.append(list_info[n])
+                    Finish = 1
+                    break
+                elif list_info[n] in UsedCities:
+                    # bot.send_message(message.chat.id, text=f"Дальше...")
+                    n += 1
+
+        elif Finish == 1:
+            break
+
+    else:
+        bot.send_message(message.chat.id, text=f"У меня нет города на эту букву.{t2}")
+def CityCheck(message, t, check):
+    if t in allRussianCities and t not in UsedCities:
+        bot.send_message(message.chat.id, text=f"{t} найден.\n"
+                                               f"{UsedCities} - названные города")
+        return True
+    else:
+        return False
+
+bot.polling(non_stop=True)
