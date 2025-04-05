@@ -1,0 +1,32 @@
+import time
+import random
+
+def NumGame(message, quest, bot, started_time, in_account):
+
+    try:
+        answer = int(message.text)
+    except ValueError:
+        bot.send_message(message.chat.id, text="Пожалуйста, введите число!")
+        return
+
+    if 1 <= answer <= 100:
+        if answer > quest:
+            bot.send_message(message.chat.id, text='Число слишком большое')
+        elif answer < quest:
+            bot.send_message(message.chat.id, text='Число слишком маленькое')
+        else:
+            end_time = time.time()
+            gamers_time = int(end_time - started_time)
+
+            bot.send_message(message.chat.id,
+                             text=f"Победа! Ваше время: {gamers_time} сек.")
+
+            # if in_account and current_user_index is not None:
+            #     # Логика сохранения результатов для авторизованных пользователей
+            #     pass
+
+            quest = random.randint(1, 100)
+            started_time = time.time()
+    else:
+        bot.send_message(message.chat.id, text="Число должно быть от 1 до 100!")
+
