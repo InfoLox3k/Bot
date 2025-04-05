@@ -1,0 +1,43 @@
+import random
+
+def CityGame(message, check, t, count_att, allRussianCities, UsedCities, bot):
+
+    if count_att == 0:
+        city = random.choice(allRussianCities)
+        UsedCities.append(city)
+        bot.send_message(message.chat.id, text=f"Я начинаю: {city}")
+        return city
+
+    else:
+
+        # Проверка последней буквы
+        last_letter = t[-1].lower()
+        if last_letter in ['ь', 'ы', 'ъ']:
+            last_letter = t[-2].lower()
+            bot.send_message(message.chat.id, text=f"Да: {last_letter}")
+
+        # Поиск города на нужную букву
+        for city in allRussianCities:
+            if 'Йошкар-Ола' in UsedCities:
+                if city[0] == last_letter.upper() and city not in UsedCities and city[-1] != 'й'and city[-1] not in ['ь', 'ы', 'ъ']:
+                    UsedCities.append(city)
+
+                    bot.send_message(message.chat.id, text=f"Мой ход: {city}")
+                    return city
+            elif 'Йошкар-Ола' not in UsedCities:
+                if city[0] == last_letter.upper() and city not in UsedCities and city[-1] not in ['ь', 'ы', 'ъ']:
+                    UsedCities.append(city)
+
+                    bot.send_message(message.chat.id, text=f"Мой ход: {city}")
+                    return city
+
+        bot.send_message(message.chat.id, text=f"Я не знаю городов на эту букву. Вы победили! {city}")
+        return None
+
+def CityCheck(message, t, check):
+    if t in allRussianCities and t not in UsedCities:
+        bot.send_message(message.chat.id, text=f"{t} найден.\n"
+                                               f"{UsedCities} - названные города")
+        return True
+    else:
+        return False
