@@ -1,0 +1,66 @@
+from telebot import types
+
+def register_user(message, df_excel, bot):
+    try:
+        name = message.text.strip()
+        if len(name) < 3:
+            bot.send_message(message.chat.id, "Имя слишком короткое (мин. 3 символа)")
+            return
+
+        bot.send_message(message.chat.id, "Введите пароль:")
+        bot.register_next_step_handler(message, lambda msg: save_registration(msg, name, df_excel, bot))
+    except Exception as e:
+        bot.send_message(message.chat.id, f"Ошибка: {e}")
+
+
+import pandas as pd
+
+
+def save_registration(message, name, df_excel, bot):
+    # Получаем пароль из сообщения
+    password = message.text.strip()
+
+    # Создаем новый DataFrame с логином и паролем
+    new_row = pd.DataFrame({'Login': [name], 'Password': [password]})
+
+    # Объединяем старый DataFrame с новым
+    df_excel = pd.concat([df_excel, new_row], ignore_index=True)
+
+    # Сохраняем обновленный DataFrame в Excel
+    df_excel.to_excel('Accounts.xlsx', index=False)
+
+    # Отправляем сообщение о успешной регистрации
+    bot.send_message(message.chat.id, text='Регистрация успешна!')
+
+
+def authorize_user(message, df_excel, bot):
+    name = message.text.strip()
+
+    indices = df_excel.index[df_excel['Login'] == name].tolist()
+
+    if indices:
+        bot.send_message(message.chat.id, text='Введите пароль:')
+        bot.send_message(message.chat.id, text=indices)
+        bot.register_next_step_handler(message, lambda msg: check_authorization(msg, indices[0], df_excel, bot))
+    else:
+        bot.send_message(message.chat.id, text=f"Пользователь '{name}' не найден.")
+
+def check_authorization(message, index, df_excel, bot):
+    password = message.text
+    Your_password = df_excel.loc[index, 'Password']
+    if password != Your_password:
+        bot.send_message(message.chat.id, text='Пароль неправильный')
+    else:
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton('Игра в Города России')
+        btn2 = types.KeyboardButton("Угадай число")
+        btn3 = types.KeyboardButton("О создателе")
+        btn4 = types.KeyboardButton('Как пользоваться?')
+        btn5 = types.KeyboardButton('Показать статистику игр')
+        btn6 = types.KeyboardButton("Выйти из аккаунта")
+
+
+        markup.add(btn1, btn2, btn3, btn4, btn5, btn6)
+
+        bot.send_message(message.chat.id, text='Добро пожаловать!', reply_markup=markup)
+        in_acoount = True
