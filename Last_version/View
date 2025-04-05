@@ -1,0 +1,9 @@
+def HowToUse(message):
+    bot.send_message(message.chat.id, text='Просто выбери действие из меню!')
+
+def ShowExcel(message):
+    try:
+        with open('Accounts.xlsx', 'rb') as file:
+            bot.send_document(message.chat.id, file)
+    except Exception as e:
+        bot.send_message(message.chat.id, text=f"Ошибка: {e}")
