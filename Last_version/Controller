@@ -11,7 +11,7 @@ import matplotlib
 from datetime import datetime
 import pytz
 
-from Model import *
+# from Model import *
 from View import *
 from NumGame import *
 from CityGame import *
@@ -127,7 +127,7 @@ leaderboard = dict()
 
 bot = telebot.TeleBot("TOKEN")
 
-df_excel = pd.read_excel("Accounts.xlsx")
+# df_excel = pd.read_excel("Accounts.xlsx")
 
 list_of_words = ["кролик", "ёжик", "яблоко", "стол", "книга", "солнце", "река", "дом", "дерево", "машина", "цветок",
                  "друг", "город", "собака", "кошка", "птица", "море", "гора", "человек", "день", "ночь", "музыка",
@@ -185,6 +185,7 @@ Gallow_state = False
 word = ''
 seen_word = ''
 mistakes = 1  # Количество попыток
+mistakes2 = 6
 quest = randint(1, 100)  # Инициализация загадки
 
 @bot.message_handler(commands=['start'])
@@ -210,11 +211,14 @@ def answer_bot(message):
     global word
     global seen_word
     global mistakes
+    global mistakes2
     global seen_word_list
     global in_account
     t = message.text
     print(t)
     t = RusText(t)
+
+    mistakes = mistakes2
 
     if t == 'Игра в Города России':
         bot.send_message(message.chat.id, text='Напиши название города.')
@@ -227,12 +231,12 @@ def answer_bot(message):
         started_time = time.time()
     elif t == "О создателе":
         bot.send_message(message.chat.id, text='Никто')
-    elif t == "Регистрация":
-        bot.send_message(message.chat.id, text='Введите имя для регистрации:')
-        bot.register_next_step_handler(message, lambda msg: register_user(msg, df_excel, bot))
-    elif t == "Авторизация":
-        bot.send_message(message.chat.id, text='Введите имя для авторизации:')
-        bot.register_next_step_handler(message, lambda msg: authorize_user(msg, df_excel, bot))
+    # elif t == "Регистрация":
+    #     bot.send_message(message.chat.id, text='Введите имя для регистрации:')
+    #     bot.register_next_step_handler(message, lambda msg: register_user(msg, df_excel, bot))
+    # elif t == "Авторизация":
+    #     bot.send_message(message.chat.id, text='Введите имя для авторизации:')
+    #     bot.register_next_step_handler(message, lambda msg: authorize_user(msg, df_excel, bot))
     elif t == "Выйти из аккаунта":
         in_account = False
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -244,9 +248,9 @@ def answer_bot(message):
         btn6 = types.KeyboardButton("Авторизация")
         markup.add(btn1 , btn2, btn3, btn4, btn5, btn6)
         bot.send_message(message.chat.id, text='Вы вышли из аккаунта.', reply_markup=markup)
-    elif t == "Показать статистику игр":
-        with open(df_excel, 'rb') as file:
-            bot.send_document(message.chat.id, file)
+    # elif t == "Показать статистику игр":
+    #     with open(df_excel, 'rb') as file:
+    #         bot.send_document(message.chat.id, file)
     elif t == 'Показать таблицу':
         ShowExcel()
     elif t.isdigit():
@@ -264,8 +268,7 @@ def answer_bot(message):
         word = random.choice(list_of_words)
         seen_word_list = ['_' for _ in range(len(word))]  # Пример инициализации списка для игры в виселицу
         seen_word = '_' * len(word)
-        mistakes = 6
-        bot.send_message(message.chat.id, text=word)
+
         bot.send_message(message.chat.id, text=seen_word)
 
     elif t in allRussianCities and t not in UsedCities:
@@ -288,12 +291,14 @@ def answer_bot(message):
                 bot.send_message(message.chat.id, text="Пиши по правилам")
         bot.send_message(message.chat.id, text=t[0] + ' ' + city[-1])
 
+
+
     elif not (t in ['Игра в Города России', "Угадай число", "О создателе", "Регистрация", "Авторизация",
                      "Выйти из аккаунта", "Показать статистику игр", 'Показать таблицу',
                      'Как пользоваться?', 'Виселица'] or
                (t in allRussianCities and t not in UsedCities)):
         if Gallow_state:
-            Gallows(message, list_of_words, bot, t, word, seen_word, mistakes, seen_word_list)
+            mistakes2 = Gallows(message, list_of_words, bot, t, word, seen_word, int(mistakes), seen_word_list)
         else:
             pass
     elif t == None:
