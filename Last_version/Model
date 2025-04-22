@@ -1,1 +1,6 @@
-nothing for now
+from datetime import datetime
+
+def Time(message, bot):
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    bot.send_message(message.chat.id, f"Текущее время: {current_time}")
+    return current_time
