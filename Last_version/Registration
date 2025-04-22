@@ -23,7 +23,7 @@ def save_registration(message, name, df_excel, bot):
     password = message.text.strip()
 
     # Создаем новый DataFrame с логином и паролем
-    new_row = pd.DataFrame({'Login': [name], 'Password': [password]})
+    new_row = pd.DataFrame({'Login': [name], 'Password': [password], 'Admin': [False]})
 
     # Объединяем старый DataFrame с новым
     df_excel = pd.concat([df_excel, new_row], ignore_index=True)
