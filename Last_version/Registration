@@ -1,4 +1,5 @@
 from telebot import types
+from Model import Time
 
 def register_user(message, df_excel, bot):
     try:
@@ -17,6 +18,7 @@ import pandas as pd
 
 
 def save_registration(message, name, df_excel, bot):
+    # import Model
     # Получаем пароль из сообщения
     password = message.text.strip()
 
@@ -29,8 +31,9 @@ def save_registration(message, name, df_excel, bot):
     # Сохраняем обновленный DataFrame в Excel
     df_excel.to_excel('Accounts.xlsx', index=False)
 
+    time_of_clocks = Time(message, bot)
     # Отправляем сообщение о успешной регистрации
-    bot.send_message(message.chat.id, text='Регистрация успешна!')
+    bot.send_message(message.chat.id, text=f'Регистрация успешна! Вы зарегистрировались в {time_of_clocks("%Y-%m-%d %H:%M:%S")}')
 
 
 def authorize_user(message, df_excel, bot):
@@ -46,6 +49,7 @@ def authorize_user(message, df_excel, bot):
         bot.send_message(message.chat.id, text=f"Пользователь '{name}' не найден.")
 
 def check_authorization(message, index, df_excel, bot):
+
     password = message.text
     Your_password = df_excel.loc[index, 'Password']
     if password != Your_password:
@@ -54,13 +58,24 @@ def check_authorization(message, index, df_excel, bot):
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         btn1 = types.KeyboardButton('Игра в Города России')
         btn2 = types.KeyboardButton("Угадай число")
-        btn3 = types.KeyboardButton("О создателе")
-        btn4 = types.KeyboardButton('Как пользоваться?')
-        btn5 = types.KeyboardButton('Показать статистику игр')
-        btn6 = types.KeyboardButton("Выйти из аккаунта")
+        btn3 = types.KeyboardButton("Виселица")
+        btn4 = types.KeyboardButton("О создателе")
+        btn5 = types.KeyboardButton('Как пользоваться?')
+        btn6 = types.KeyboardButton('Показать таблицу')
+        # btn7 = types.KeyboardButton('Показать статистику игр')
+        btn7 = types.KeyboardButton("Выйти из аккаунта")
 
 
-        markup.add(btn1, btn2, btn3, btn4, btn5, btn6)
+        markup.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7)
 
-        bot.send_message(message.chat.id, text='Добро пожаловать!', reply_markup=markup)
+        time_of_clocks = Time(message, bot)
+        bot.send_message(message.chat.id, text=f'Добро пожаловать! Вы авторизовались в {time_of_clocks}', reply_markup=markup)
+
+
+
         in_acoount = True
+
+def Results(message, bot):
+    df_result = pd.read_excel("Result_List.xlsx")
+
+    bot.send_message(message.chat.id, text=df_result.iloc[0, 0])
