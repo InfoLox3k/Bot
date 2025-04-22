@@ -58,7 +58,7 @@ cities_L = ["Лабинск", "Лаишево", "Липецк", "Лиски", "�
 cities_M = ["Магадан", "Магнитогорск", "Майкоп", "Махачкала", "Мелеуз", "Миасс", "Минеральные Воды", "Москва", "Мурманск", "Мытищи", "Мышкин"]
 
 # Список городов на букву Н
-cities_N = ["Набережные Челны", "Нальчик", "Наро-Фоминск", "Невинномысск", "Нижневартовск", "Нижний Новгород", "Нижний Тагил", "Николаевск", "Никольск", "Новороссийск", "Новосибирск", "Новомосковск", "Новоржев", "Новый Уренгой", "Ногинск", "Норильск", "Ноябрьск"]
+cities_N = ["Набережные Челны", "Нальчик", 'Нягань ', "Наро-Фоминск", "Невинномысск", "Нижневартовск", "Нижний Новгород", "Нижний Тагил", "Николаевск", "Никольск", "Новороссийск", "Новосибирск", "Новомосковск", "Новоржев", "Новый Уренгой", "Ногинск", "Норильск", "Ноябрьск"]
 
 # Список городов на букву О
 cities_O = ["Обнинск", "Одинцово", "Озеры", "Октябрьский", "Омск", "Оренбург", "Орехово-Зуево", "Орлов", "Острогожск", "Оха"]
@@ -127,7 +127,7 @@ leaderboard = dict()
 
 bot = telebot.TeleBot("TOKEN")
 
-# df_excel = pd.read_excel("Accounts.xlsx")
+df_excel = pd.read_excel("Accounts.xlsx")
 
 list_of_words = ["кролик", "ёжик", "яблоко", "стол", "книга", "солнце", "река", "дом", "дерево", "машина", "цветок",
                  "друг", "город", "собака", "кошка", "птица", "море", "гора", "человек", "день", "ночь", "музыка",
@@ -185,7 +185,7 @@ Gallow_state = False
 word = ''
 seen_word = ''
 mistakes = 1  # Количество попыток
-mistakes2 = 6
+mistakes2 = 5
 quest = randint(1, 100)  # Инициализация загадки
 
 @bot.message_handler(commands=['start'])
@@ -193,11 +193,11 @@ def startFunc(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     btn1 = types.KeyboardButton('Игра в Города России')
     btn2 = types.KeyboardButton("Угадай число")
-    btn3 = types.KeyboardButton("О создателе")
-    btn4 = types.KeyboardButton('Как пользоваться?')
+    btn3 = types.KeyboardButton("Виселица")
+    btn4 = types.KeyboardButton('О создателе')
     btn5 = types.KeyboardButton("Регистрация")
     btn6 = types.KeyboardButton("Авторизация")
-    btn7 = types.KeyboardButton("Виселица")
+    btn7 = types.KeyboardButton("Как пользоваться?")
 
     markup.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7)
     bot.send_message(message.chat.id, text='Приветик! Я ботик!')
@@ -223,87 +223,98 @@ def answer_bot(message):
     if t == 'Игра в Города России':
         bot.send_message(message.chat.id, text='Напиши название города.')
         count_att = 0
+        # time_of_clocks = T
         city = CityGame(message, None, t, count_att, allRussianCities, UsedCities, bot)
+
     elif t == "Угадай число":
         quest = randint(1, 100)  # Генерируем новое число
         bot.send_message(message.chat.id, text='Я загадал число от 1 до 100, а ты должен его отгадать.')
         global started_time
         started_time = time.time()
+
     elif t == "О создателе":
         bot.send_message(message.chat.id, text='Никто')
-    # elif t == "Регистрация":
-    #     bot.send_message(message.chat.id, text='Введите имя для регистрации:')
-    #     bot.register_next_step_handler(message, lambda msg: register_user(msg, df_excel, bot))
-    # elif t == "Авторизация":
-    #     bot.send_message(message.chat.id, text='Введите имя для авторизации:')
-    #     bot.register_next_step_handler(message, lambda msg: authorize_user(msg, df_excel, bot))
+    elif t == "Регистрация":
+
+        bot.send_message(message.chat.id, text='Введите имя для регистрации:')
+        bot.register_next_step_handler(message, lambda msg: register_user(msg, df_excel, bot))
+
+    elif t == "Авторизация":
+        bot.send_message(message.chat.id, text='Введите имя для авторизации:')
+        bot.register_next_step_handler(message, lambda msg: authorize_user(msg, df_excel, bot))
+
     elif t == "Выйти из аккаунта":
         in_account = False
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         btn1 = types.KeyboardButton('Игра в Города России')
         btn2 = types.KeyboardButton("Угадай число")
-        btn3 = types.KeyboardButton("О создателе")
-        btn4 = types.KeyboardButton('Как пользоваться?')
+        btn3 = types.KeyboardButton("Виселица")
+        btn4 = types.KeyboardButton('О создателе')
         btn5 = types.KeyboardButton("Регистрация")
         btn6 = types.KeyboardButton("Авторизация")
-        markup.add(btn1 , btn2, btn3, btn4, btn5, btn6)
+        btn7 = types.KeyboardButton("Как пользоваться?")
+
+        markup.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7)
         bot.send_message(message.chat.id, text='Вы вышли из аккаунта.', reply_markup=markup)
-    # elif t == "Показать статистику игр":
-    #     with open(df_excel, 'rb') as file:
-    #         bot.send_document(message.chat.id, file)
+
+    elif t == "Показать статистику игр":
+        pass
+
     elif t == 'Показать таблицу':
-        ShowExcel()
+        if df_excel.iloc[0, 2] == True:
+            bot.send_message(message.chat.id, text=df_excel.iloc[0, 2])
+            with open('Accounts.xlsx', 'rb') as file:
+                bot.send_document(message.chat.id, file)
+                Results(message, bot)
     elif t.isdigit():
         NumGame(message, quest, bot, started_time, in_account)
     elif t == 'Как пользоваться?':
-        HowToUse(message)
+        HowToUse(message, bot)
     elif t == 'Виселица':
-        bot.send_message(message.chat.id, text="Добро пожаловать в игру 'Виселица'!")
+        bot.send_message(message.chat.id, text="Добро пожаловать в игру 'Виселица'!\n"
+                                               "У тебя 6 возможностей на ошибку")
         #
         # bot.send_message(message.chat.id, text=len(word))
         # bot.send_message(message.chat.id, text= word)
         # bot.send_message(message.chat.id, text=seen_word)
         # bot.send_message(message.chat.id, text="Слово: "+" ".join(seen_word))
+        reset_game()
         Gallow_state = True
         word = random.choice(list_of_words)
         seen_word_list = ['_' for _ in range(len(word))]  # Пример инициализации списка для игры в виселицу
-        seen_word = '_' * len(word)
+        seen_word = '_ ' * len(word)
 
         bot.send_message(message.chat.id, text=seen_word)
 
-    elif t in allRussianCities and t not in UsedCities:
-
-        t = t.lower()
-        if city[-1] not in ('ь', 'ы', 'ъ'):
-            if t[0] == city[-1]:
-                city = CityGame(message, None, t, 1, allRussianCities, UsedCities, bot)
-                UsedCities.append(t)
-                # index_letter = UsedCities.index(t)
-                # bot.send_message(message.chat.id, text=f"{t} {index_letter}")
-
-            else:
-                bot.send_message(message.chat.id, text="Пиши по правилам")
+    elif t in allRussianCities:
+        if t in UsedCities:
+            bot.send_message(message.chat.id, text="Уже было")
+            return
         else:
-            if t[0] == city[-2]:
-                city = CityGame(message, None, t, 1, allRussianCities, UsedCities, bot)
-                UsedCities.append(t)
+            UsedCities.append(t)
+            t = t.lower()
+            if city[-1] not in ('ь', 'ы', 'ъ'):
+                if t[0] == city[-1]:
+                    city = CityGame(message, None, t, 1, allRussianCities, UsedCities, bot)
+                    # index_letter = UsedCities.index(t)
+                    # bot.send_message(message.chat.id, text=f"{t} {index_letter}")
+
+                else:
+                    bot.send_message(message.chat.id, text="Пиши по правилам")
             else:
-                bot.send_message(message.chat.id, text="Пиши по правилам")
-        bot.send_message(message.chat.id, text=t[0] + ' ' + city[-1])
+                if t[0] == city[-2]:
+                    city = CityGame(message, None, t, 1, allRussianCities, UsedCities, bot)
+                else:
+                    bot.send_message(message.chat.id, text="Пиши по правилам")
+            bot.send_message(message.chat.id, text=t[0] + ' ' + city[-1])
 
 
 
-    elif not (t in ['Игра в Города России', "Угадай число", "О создателе", "Регистрация", "Авторизация",
-                     "Выйти из аккаунта", "Показать статистику игр", 'Показать таблицу',
-                     'Как пользоваться?', 'Виселица'] or
-               (t in allRussianCities and t not in UsedCities)):
+    else:
         if Gallow_state:
             mistakes2 = Gallows(message, list_of_words, bot, t, word, seen_word, int(mistakes), seen_word_list)
         else:
             pass
-    elif t == None:
-        pass
-    else:
-        bot.send_message(message.chat.id, text="Не норм")
+
 
 bot.polling(non_stop=True)
