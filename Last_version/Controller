@@ -126,7 +126,7 @@ def RusText(message):
 
 leaderboard = dict()
 
-bot = telebot.TeleBot("7848542012:AAFwj1Sjl6sEteKVD_AMRxLrv4ayWR91ij8")
+bot = telebot.TeleBot("TOKEN")
 
 df_excel = pd.read_excel("Accounts.xlsx")
 
