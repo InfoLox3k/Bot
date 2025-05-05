@@ -1,7 +1,8 @@
 import time
 import random
+from Model import Time
 
-def NumGame(message, quest, bot, started_time, in_account):
+def NumGame(message, quest, bot, started_time, in_account, df_excel):
 
     try:
         answer = int(message.text)
@@ -19,11 +20,13 @@ def NumGame(message, quest, bot, started_time, in_account):
             gamers_time = int(end_time - started_time)
 
             bot.send_message(message.chat.id,
-                             text=f"Победа! Ваше время: {gamers_time} сек.")
+                             text=f"Победа! Ваше время: {gamers_time} сек.\n"
+                                  f"Вы победили в {Time(message, bot)}")
+            quest = random.randint(1, 100)
 
-            # if in_account and current_user_index is not None:
-            #     # Логика сохранения результатов для авторизованных пользователей
-            #     pass
+            if in_account:
+                # Логика сохранения результатов для авторизованных пользователей
+                df_excel.index[name]
 
             quest = random.randint(1, 100)
             started_time = time.time()
