@@ -412,7 +412,9 @@ def answer_bot(message):
 
         else:
             if Gallow_state:
-                mistakes2 = Gallows(message, list_of_words, bot, t, word, seen_word, int(mistakes), seen_word_list, Gallow_state)
+                list_Gallows = Gallows(message, list_of_words, bot, t, word, seen_word, int(mistakes), seen_word_list, Gallow_state)
+                mistakes2 = list_Gallows[0]
+                Gallow_state = list_Gallows[1]
             else:
                 pass
 
