@@ -8,13 +8,13 @@ def Gallows(message, list_of_words, bot, t, word, seen_word, mistakes, seen_word
         if mistakes <= 0:
             bot.send_message(message.chat.id, text="Вы проиграли! Загаданное слово было: " + word)
             Gallow_state = False
-            return wrong_attempts  # Завершаем выполнение функции
+            return wrong_attempts, Gallow_state  # Завершаем выполнение функции
 
         if t == word:
             bot.send_message(message.chat.id, text="Поздравляю! Вы угадали слово: " + word)
             seen_word = ' '.join(seen_word_list)
             Gallow_state = False
-            return wrong_attempts  # Завершаем выполнение функции
+            return wrong_attempts, Gallow_state  # Завершаем выполнение функции
 
         if t in word:
             for index, letter in enumerate(word):
@@ -25,7 +25,7 @@ def Gallows(message, list_of_words, bot, t, word, seen_word, mistakes, seen_word
                 bot.send_message(message.chat.id, text="Поздравляю! Вы угадали слово: " + word)
                 seen_word = ' '.join(seen_word_list)
                 Gallow_state = False
-                return wrong_attempts  # Завершаем выполнение функции
+                return wrong_attempts, Gallow_state  # Завершаем выполнение функции
 
         else:
               # Уменьшаем количество ошибок
@@ -33,7 +33,7 @@ def Gallows(message, list_of_words, bot, t, word, seen_word, mistakes, seen_word
 
             wrong_attempts -= 1
         bot.send_message(message.chat.id, text=" ".join(seen_word_list))  # Отправляем текущее состояние слова
-        return wrong_attempts  # Завершаем выполнение функции
+        return wrong_attempts, Gallow_state  # Завершаем выполнение функции
 
 def reset_game():
     global Gallow_state, word, seen_word, mistakes
