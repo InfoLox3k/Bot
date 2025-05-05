@@ -186,10 +186,32 @@ Gallow_state = False
 word = ''
 seen_word = ''
 attempts_of_city_game = 0
-mistakes = 1  # Количество попыток
+mistakes = 5  # Количество попыток
 mistakes2 = 5
 quest = randint(1, 100)  # Инициализация загадки
 this_bot = False
+
+answers = [
+    "Да",
+    "Ага",
+    "Естественно",
+    "Конечно",
+    "Ну да",
+    "А как же иначе?",
+    "Ты разве сомневался?",
+    "Ещё спрашиваешь",
+    "Было дело",
+    "Нет, просто стоял и смотрел",  # ироничный
+    "Да, сосал",
+    "Оф корс, американ",
+    "Без вариантов",
+    "А ты как думал?",
+    "Ну сосал и чо?",
+    "Как профессионал",
+    "Как последний раз",
+    "Не без этого",
+    "Давно не пробовал?",  # намёк
+    "Ты бы на моём месте тоже сосал"]
 
 @bot.message_handler(commands=['start_me'])
 def startFunc(message):
@@ -213,11 +235,14 @@ def answer_bot(message):
     global this_bot
     if this_bot:
 
+
         global city, attempts_of_city_game, quest, Gallow_state, word, seen_word, mistakes, mistakes2, seen_word_list, in_account
 
         t = message.text
         print(t)
         t = RusText(t)
+
+
 
         mistakes = mistakes2
 
@@ -237,12 +262,12 @@ def answer_bot(message):
             bot.send_message(message.chat.id, text='Никто')
         elif t == "Регистрация":
 
-            bot.send_message(message.chat.id, text='Введите имя для регистрации:')
+            bot.send_message(message.chat.id, text='Введите что-нибудь:')
             bot.register_next_step_handler(message, lambda msg: register_user(msg, df_excel, bot))
             in_account = True
 
         elif t == "Авторизация":
-            bot.send_message(message.chat.id, text='Введите имя для авторизации:')
+            bot.send_message(message.chat.id, text='Введите что-нибудь:')
             # authorize_func = authorize_user(df_excel, bot)
             bot.register_next_step_handler(message, lambda msg: authorize_user(msg, df_excel, bot))
             in_account = True
@@ -345,13 +370,53 @@ def answer_bot(message):
                 else:
                     pass
 
+        t = t.lower()
 
+        if t == "сосал?":
+            rand_answer = random.choice(answers)
+            bot.send_message(message.chat.id, text=rand_answer)
+
+        elif "11 сентября" in t or t == "11 сентября":
+
+            with open('og_og_153669497528304053.jpg', 'rb') as photo:
+                bot.send_photo(message.chat.id, photo)
+        #         message.from_user.id
+                bot.send_message(message.chat.id, text="Мой любимый праздник")
+
+        elif t == "скинь музыку":
+            audio_files = [
+                '03 Somewhere I Belong.mp3',
+                '07 Faint.mp3',
+                '08 No More Sorrow.mp3',
+                '09 Place For My Head.mp3',
+                'Casey Edwards Bury The Light.mp3',
+                'De_K_lsche_Jecken_Sieben_Tage_lang_Was_wollen_wir_trinken_69471986.mp3',
+                'German_Soldiers_Song_-_Erika_with_English_Subtitles_74154166.mp3',
+                'Hyper - Spoiler.mp3',
+                'Joji - Tick Tock.mp3',
+                'Kenshi Yonezu - Kick Back.mp3',
+                'Linkin_Park_-_In_The_End_47828874.mp3',
+                'Linkin_Park_-_One_Step_Closer_47828867.mp3',
+                'Linkin_Park_-_What_Ive_Done_47894351.mp3',
+                'Linkin_Park_David_Campbell_-_Leave_Out_All_The_Rest_60487926.mp3'
+                'LINKS 2 3 4.mp3'
+            ]
+
+            for audio_path in audio_files:
+                try:
+                    with open(audio_path, 'rb') as audio:
+                        bot.send_audio(message.chat.id, audio)
+                except:
+                    bot.send_message(message.chat.id, text=f"Прости, не смог отправить {audio}")
+                    continue
 
         else:
             if Gallow_state:
                 mistakes2 = Gallows(message, list_of_words, bot, t, word, seen_word, int(mistakes), seen_word_list, Gallow_state)
             else:
                 pass
+
+
 
     elif not this_bot:
         bot.send_message(message.chat.id, text="Напишите /start_me для запуска бота")
