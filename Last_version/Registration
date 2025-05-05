@@ -3,13 +3,10 @@ from Model import Time
 
 def register_user(message, df_excel, bot):
     try:
-        name = message.text.strip()
-        if len(name) < 3:
-            bot.send_message(message.chat.id, "Имя слишком короткое (мин. 3 символа)")
-            return
+        user_id = message.from_user.id
 
         bot.send_message(message.chat.id, "Введите пароль:")
-        bot.register_next_step_handler(message, lambda msg: save_registration(msg, name, df_excel, bot))
+        bot.register_next_step_handler(message, lambda msg: save_registration(msg, user_id, df_excel, bot))
     except Exception as e:
         bot.send_message(message.chat.id, f"Ошибка: {e}")
 
@@ -17,13 +14,16 @@ def register_user(message, df_excel, bot):
 import pandas as pd
 
 
-def save_registration(message, name, df_excel, bot):
+def save_registration(message, user_id, df_excel, bot):
     # import Model
     # Получаем пароль из сообщения
     password = message.text.strip()
+    if password in ('Игра в Города России', "Угадай число", "Виселица", 'О создателе', "Регистрация", "Авторизация", "Как пользоваться?"):
+        bot.send_message(message.chat.id, "Пройдите регистрацию заново")
+        return
 
     # Создаем новый DataFrame с логином и паролем
-    new_row = pd.DataFrame({'Login': [name], 'Password': [password], 'Admin': [False]})
+    new_row = pd.DataFrame({'Login': [user_id], 'Password': [password], 'Admin': [False]})
 
     # Объединяем старый DataFrame с новым
     df_excel = pd.concat([df_excel, new_row], ignore_index=True)
@@ -33,22 +33,23 @@ def save_registration(message, name, df_excel, bot):
 
     time_of_clocks = Time(message, bot)
     # Отправляем сообщение о успешной регистрации
-    bot.send_message(message.chat.id, text=f'Регистрация успешна! Вы зарегистрировались в {time_of_clocks("%Y-%m-%d %H:%M:%S")}')
+    bot.send_message(message.chat.id, text=f'Регистрация успешна! Вы зарегистрировались в {time_of_clocks}')
+    return
 
 
 def authorize_user(message, df_excel, bot):
     name = message.text.strip()
+    user_id = message.from_user.id
 
-    indices = df_excel.index[df_excel['Login'] == name].tolist()
+    user_exists = df_excel[df_excel['Login'] == user_id].any()  # Проверяем, есть ли такой логин
 
-    if indices:
+    if user_exists.any():  # Если пользователь найден
         bot.send_message(message.chat.id, text='Введите пароль:')
-        bot.send_message(message.chat.id, text=indices)
-        bot.register_next_step_handler(message, lambda msg: check_authorization(msg, indices[0], df_excel, bot))
+        bot.register_next_step_handler(message, lambda msg: check_authorization(msg, df_excel[df_excel['Login'] == user_id].index[0], df_excel, bot, user_id))
     else:
         bot.send_message(message.chat.id, text=f"Пользователь '{name}' не найден.")
 
-def check_authorization(message, index, df_excel, bot):
+def check_authorization(message, index, df_excel, bot, user_id):
 
     password = message.text
     Your_password = df_excel.loc[index, 'Password']
@@ -71,9 +72,7 @@ def check_authorization(message, index, df_excel, bot):
         time_of_clocks = Time(message, bot)
         bot.send_message(message.chat.id, text=f'Добро пожаловать! Вы авторизовались в {time_of_clocks}', reply_markup=markup)
 
-
-
-        in_acoount = True
+        return
 
 def Results(message, bot):
     df_result = pd.read_excel("Result_List.xlsx")
